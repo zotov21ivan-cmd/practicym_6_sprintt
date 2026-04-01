@@ -54,14 +54,13 @@ class OrderPage(BasePage):
         period_option = (By.XPATH, f"//div[text()='{period}']")
         self.click_when_clickable(period_option)
 
-    @allure.step("Выбираем цвет самоката: {color}")
-    def select_color(self, color):
-        if color == "black":
-            self.click_element(OrderPageLocators.BLACK_COLOR_CHECKBOX)
-        elif color == "grey":
-            self.click_element(OrderPageLocators.GREY_COLOR_CHECKBOX)
-        else:
-            raise ValueError(f"Unknown color: {color}")
+    @allure.step("Выбираем черный цвет самоката")
+    def select_black_color(self):
+        self.click_element(OrderPageLocators.BLACK_COLOR_CHECKBOX)
+
+    @allure.step("Выбираем серый цвет самоката")
+    def select_grey_color(self):
+        self.click_element(OrderPageLocators.GREY_COLOR_CHECKBOX)
         
     @allure.step("Клик по кнопке 'Заказать'")
     def click_order_button(self):

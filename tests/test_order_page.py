@@ -6,27 +6,31 @@ from data.parametrize_data import DATA_FOR_ORDER
 import pytest
 import allure
 
+@allure.feature("Оформление заказа")
 class TestOrderPage:
 
-  
-
-    @allure.feature("Оформление заказа")
-    @allure.title("Проверка успешного оформления заказа с различными данными") 
+    @allure.title("Проверка успешного оформления заказа с различными данными")
     @pytest.mark.parametrize("first_name, last_name, address, metro_station, phone_number, date, rental_period, color, order_button", DATA_FOR_ORDER)
     def test_order_success(self, driver_firefox, first_name, last_name, address, metro_station, phone_number, date, rental_period, color, order_button):
-        self.driver = driver_firefox
-        self.driver.get(BASE_URL)
-        main_page = MainPage(self.driver)
+        main_page = MainPage(driver_firefox)
+        order_page = OrderPage(driver_firefox)
+        main_page.open_page(BASE_URL)
         main_page.select_order_button(order_button)
-        order_page = OrderPage(self.driver)
-        order_page.fill_first_page(first_name, last_name, address, metro_station, phone_number)
+        order_page.fill_first_page(
+            first_name, 
+            last_name, 
+            address, 
+            metro_station, 
+            phone_number
+        )
         order_page.click_next_button()
-        order_page.wait_second_page()
         order_page.fill_second_page(date, rental_period, color)
         order_page.click_order_button()
-        order_page.wait_order_confirmation()
         order_page.confirm_order()
-        success_message = order_page.wait_order_success_message()
-        assert "Заказ оформлен" in success_message, f"Ожидали сообщение 'Заказ оформлен', получили {success_message}"
+        # получаем текст статуса заказа через метод страницы
+        actual_message = order_page.get_order_status_text()
+        
+        assert "Заказ оформлен" in actual_message, \
+            f"Ожидали сообщение 'Заказ оформлен', но получили: '{actual_message}'"
         
           

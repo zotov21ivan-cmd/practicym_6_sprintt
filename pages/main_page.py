@@ -52,13 +52,12 @@ class MainPage(BasePage):
     def wait_main_page_loaded(self):
         self.wait_for_url_to_be(BASE_URL)
 
-    @allure.step("Выбираем кнопку для оформления заказа - {button_type}")
-    def select_order_button(self, button_type):
-        if button_type == "upper":
-            self.click_upper_order_button()
-        elif button_type == "lower":
-            self.click_lower_order_button()
-        else:
-            raise ValueError(f"Неподдерживаемый тип кнопки: {button_type}")
+    @allure.step("Нажимаем на верхнюю кнопку оформления заказа")
+    def click_upper_order_button(self):
+        self.driver.find_element(*BasePageLocators.UPPER_ORDER_BUTTON).click()
+
+    @allure.step("Нажимаем на нижнюю кнопку оформления заказа")
+    def click_lower_order_button(self):
+        self.driver.find_element(*BasePageLocators.LOWER_ORDER_BUTTON).click()
 
     

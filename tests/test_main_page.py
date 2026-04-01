@@ -7,59 +7,54 @@ import pytest
 import allure
 
 
-class TestMainPage:
+@allure.feature("Логотипы")
+class TestLogos:
+    @pytest.fixture(autouse=True)
+    def setup(self, driver_firefox):
+        # Инициализируем страницу и открываем её через метод класса
+        self.main_page = MainPage(driver_firefox)
+        self.main_page.open_page(BASE_URL)
 
-  
+    @allure.title("Проверка перехода на Дзен через логотип Яндекса")
+    def test_yandex_logo_click_success(self):
+        self.main_page.click_yandex_logo()
+        self.main_page.switch_to_new_window()
+        self.main_page.wait_dzen_loaded()
+        assert "dzen.ru" in self.main_page.get_url()
 
-    @allure.feature("FAQ")
-    @allure.title("Проверка всех ответов")
+    @allure.title("Проверка возврата на главную через логотип Самоката")
+    def test_samokat_logo_click_success(self):
+        self.main_page.click_lower_order_button() 
+        self.main_page.click_samokat_logo()
+        self.main_page.wait_main_page_loaded()
+        assert self.main_page.get_url() == BASE_URL
+
+
+@allure.feature("Кнопки оформления заказа")
+class TestOrderButtons:
+    @pytest.fixture(autouse=True)
+    def setup(self, driver_firefox):
+        self.main_page = MainPage(driver_firefox)
+        self.main_page.open_page(BASE_URL)
+
+    @allure.title("Проверка верхней кнопки 'Заказать'")
+    def test_upper_order_button_click_success(self):
+        self.main_page.click_upper_order_button()
+        assert "/order" in self.main_page.get_url()
+
+    @allure.title("Проверка нижней кнопки 'Заказать'")
+    def test_lower_order_button_click_success(self):
+        self.main_page.click_lower_order_button()
+        assert "/order" in self.main_page.get_url()
+
+
+@allure.feature("FAQ (Вопросы и ответы)")
+class TestMainPageFAQ:
+    @allure.title("Проверка текста ответа в FAQ")
     @pytest.mark.parametrize("index, expected_answer", FAQ_ANSWERS)
     def test_faq_answer(self, driver_firefox, index, expected_answer):
-        self.driver = driver_firefox
-        self.driver.get(BASE_URL)
-        main_page = MainPage(self.driver)
+        main_page = MainPage(driver_firefox)
+        main_page.open_page(BASE_URL)
         main_page.click_faq_question(index)
         answer_text = main_page.get_faq_answer_text(index)
-        assert answer_text == expected_answer, f"Ожидаемый ответ: {expected_answer}, полученный ответ: {answer_text}"
-
-    @allure.feature("Логотипы")
-    @allure.title("Проверка клика по Яндекс логотипу")
-    def test_yandex_logo_click_success(self, driver_firefox):
-        self.driver = driver_firefox
-        self.driver.get(BASE_URL)
-        main_page = MainPage(self.driver)
-        main_page.click_yandex_logo()
-        main_page.switch_to_new_window()
-        main_page.wait_dzen_loaded()
-        assert "dzen.ru" in main_page.get_url(), f"Ожидали 'dzen.ru' в URL, получили {main_page.get_url()}"
-
-    @allure.feature("Логотипы")
-    @allure.title("Проверка клика по логотипу Самоката")
-    def test_samokat_logo_click_success(self, driver_firefox):
-        self.driver = driver_firefox
-        self.driver.get(BASE_URL)
-        main_page = MainPage(self.driver)
-        main_page.click_lower_order_button()
-        main_page.click_samokat_logo()
-        main_page.wait_main_page_loaded()
-        assert main_page.get_url() == BASE_URL, f"Ожидали URL '{BASE_URL}', получили {main_page.get_url()}"
-
-    @allure.feature("Заказ")
-    @allure.title("Проверка верхней кнопки 'Заказать'")
-    def test_upper_order_button_click_success(self, driver_firefox):
-        self.driver = driver_firefox
-        self.driver.get(BASE_URL)
-        main_page = MainPage(self.driver)
-        main_page.click_upper_order_button()
-        assert "/order" in main_page.get_url(), f"Ожидали URL '{BASE_URL}order', получили {main_page.get_url()}"
-
-    @allure.feature("Заказ")
-    @allure.title("Проверка нижней кнопки 'Заказать'")
-    def test_lower_order_button_click_success(self, driver_firefox):
-        self.driver = driver_firefox
-        self.driver.get(BASE_URL)
-        main_page = MainPage(self.driver)
-        main_page.click_lower_order_button()
-        assert "/order" in main_page.get_url(), f"Ожидали URL '{BASE_URL}order', получили {main_page.get_url()}"
-
-    
+        assert answer_text == expected_answer
